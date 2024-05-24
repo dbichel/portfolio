@@ -1,0 +1,29 @@
+version: 3
+
+vars:
+  # Terraform Backend Configuration
+  S3_BUCKET: dbichel-portfolio-project
+  S3_KEY: terraform-state-file
+  REGION: us-east-1
+
+  TERRAFORM_CMD: terraform -chdir=Terraform
+  BACKEND_PATH: backend.conf
+
+includes:
+  terraform:
+    taskfile:  ./Terraform/Taskfile.yml
+
+tasks:
+  setup:
+    desc: Fully setup the project from scratch
+    cmds:
+      - task: terraform:backend-create
+      - task: terraform:init
+      - task: terraform:apply
+  destroy:
+    desc: Fully teardown the project putting it back into a "scratch" state
+    cmds:
+      - task: terraform:destroy
+      - task: terraform:backend-destroy
+      - rm -r Terraform/.terraform
+      - rm Terraform/.terraform.lock.hcl

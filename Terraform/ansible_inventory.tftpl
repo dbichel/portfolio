@@ -1,0 +1,9 @@
+[proxy]
+${jumphost_ip}
+
+[jumphosts]
+${jumphost_ip}
+
+[control_nodes]
+%{ for ip in control_node_ips}${ip}
+%{ endfor }

@@ -1,0 +1,41 @@
+version: 3
+
+tasks:
+  adhoc:
+    desc: Passes command line arguments directly to terraform. Must separate task name and arguments with --
+    cmds:
+      - "{{.TERRAFORM_CMD}} {{.CLI_ARGS}}"
+  backend-create:
+    desc: Create an s3 bucket and initialize backend configuration using it
+    cmds:
+      - aws s3 mb s3://{{.S3_BUCKET}}
+      - touch {{.BACKEND_PATH}}
+      - echo 'bucket="{{.S3_BUCKET}}"' > {{.BACKEND_PATH}}
+      - echo 'key="{{.S3_KEY}}"' >> {{.BACKEND_PATH}}
+      - echo 'region="{{.REGION}}"' >> {{.BACKEND_PATH}}
+  init:
+    desc: Runs terraform init
+    cmds:
+      - "{{.TERRAFORM_CMD}} init -backend-config=../{{.BACKEND_PATH}}"
+  plan:
+    desc: Runs terraform plan
+    cmds:
+      - "{{.TERRAFORM_CMD}} plan"
+  apply:
+    desc: Runs terraform apply
+    cmds:
+      - "{{.TERRAFORM_CMD}} apply"
+  rebuild:
+    desc: Runs terraform destroy and then apply
+    cmds:
+      - task: destroy
+      - task: apply
+  destroy:
+    desc: Runs terraform destroy
+    cmds:
+      - "{{.TERRAFORM_CMD}} destroy"
+  backend-destroy:
+    desc: Destroys terraform's backend s3 bucket and removes backend configuration
+    cmds:
+      - aws s3 rb --force s3://{{.S3_BUCKET}}
+      - rm {{.BACKEND_PATH}}
