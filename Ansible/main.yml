@@ -3,30 +3,40 @@
   connection: local
   gather_facts: False
   tasks:
-    - name: Configure Jump Host Keys
+    - name: Get Jumphost Host Keys
       retries: 10
       delay: 5
-      until: "_result.rc == 0"
-      ansible.builtin.shell: "ssh-keyscan {{ item }} >> known_hosts"
+      until: _result is not failed
+      ansible.builtin.shell: "ssh-keyscan -t ed25519 {{ hostvars[item].ansible_host }}"
       with_items: "{{ groups['jumphosts'] }}"
       register: _result
+      changed_when: False
+    - name: Configure Jumphost HostKeys
+      ansible.builtin.lineinfile:
+        path: known_hosts
+        create: true
+        mode: '0666'
+        line: "{{ item.stdout }}"
+      loop: "{{ _result.results }}"
 
-- hosts: jumphosts
+- hosts: jumphost
   gather_facts: False
   tasks:
     - name: Gather K8S Host Keys
       retries: 10
       delay: 5
-      until: "_hostkeys.rc == 0"
-      ansible.builtin.shell: "ssh-keyscan {{ item }}"
+      until: _hostkeys is not failed
+      ansible.builtin.shell: "ssh-keyscan -t ed25519 {{ hostvars[item].ansible_host }}"
       with_items: "{{ groups['kubernetes'] }}"
       register: _hostkeys
+      changed_when: False
 
     - name: Configure K8S Host Keys
       delegate_to: localhost
       ansible.builtin.lineinfile:
         path: known_hosts
         line: "{{ item.stdout }}"
+        regexp: "{{ item.stdout.split()[0] }}"
       loop: "{{ _hostkeys.results }}"
 
 - name: Configure Jumphosts
@@ -34,14 +44,3 @@
 
 - name: Configure K8S Machines
   ansible.builtin.import_playbook: kubernetes.yml
-
-- hosts: localhost
-  connection: local
-  gather_facts: False
-  tasks:
-    - name: Remove Temporary Known Hosts
-      ansible.builtin.file:
-        path: known_hosts
-        state: absent
-  tags:
-    - always

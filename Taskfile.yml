@@ -30,3 +30,4 @@ tasks:
       - task: terraform:backend-destroy
       - rm -r Terraform/.terraform
       - rm Terraform/.terraform.lock.hcl
+      - rm Ansible/known_hosts

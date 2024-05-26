@@ -1,11 +1,15 @@
 ---
 - name: Configure Kubernetes Hosts
   hosts: kubernetes
-  gather_facts: false
+  gather_facts: False
 
   tasks:
-  - name: Create Download Directory
-    ansible.builtin.file:
-      path: downloads
-      state: directory
-      mode: '0755'
+  - name: Add Hostname To /etc/hosts
+    ansible.builtin.lineinfile:
+      path: /etc/hosts
+      line: "127.0.0.1 {{ inventory_hostname }}.kubernetes.local {{ inventory_hostname }}"
+    become: True
+  - name: Change Hostname
+    ansible.builtin.hostname:
+      name: "{{ inventory_hostname }}"
+    become: True
