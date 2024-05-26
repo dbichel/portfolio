@@ -1,12 +1,57 @@
 ---
 - name: Configure Jumphost
+  gather_facts: false
   hosts: jumphosts
 
   tasks:
-  - name: Install utilities
-    ansible.builtin.dnf:
-      name: "{{ item }}"
-      state: latest
-    loop:
-      - git
-    become: true
+  # - name: Create Download Directory
+  #   ansible.builtin.file:
+  #     path: downloads
+  #     state: directory
+  #     mode: '0755'
+
+  # - name: Get Current K8S Version
+  #   ansible.builtin.uri:
+  #     url: https://dl.k8s.io/release/stable.txt
+  #     return_content: true
+  #   register: k8s_version
+  
+  # - name: Download Kube Binaries
+  #   ansible.builtin.get_url:
+  #     url: "https://dl.k8s.io/release/{{ k8s_version.content }}/bin/linux/amd64/{{ item }}"
+  #     dest: downloads
+  #   loop:
+  #     - kubectl
+  #     - kube-apiserver
+  #     - kube-controller-manager
+  #     - kube-scheduler
+  #     - kube-proxy
+  #     - kubelet
+  
+  # - name: Get Latest Github Tools Versions
+  #   github_download_latest:
+  #     github_path: "{{ item.path }}"
+  #     file_regex: "{{ item.regex }}"
+  #   loop:
+  #     - { path: 'kubernetes-sigs/cri-tools', regex: '.*crictl-v([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz$' }
+  #     - { path: 'opencontainers/runc', regex: '.*runc.amd64$' }
+  #     - { path: 'containernetworking/plugins', regex: '.*cni-plugins-linux-amd64-v([0-9]*\.[0-9]*\.[0-9]*).tgz$' }
+  #     - { path: 'containerd/containerd', regex: '.*\/containerd-([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz$' }
+  #     - { path: 'etcd-io/etcd', regex: '.*etcd-v([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz' }
+  #   register: _latest_github_urls
+
+  # - name: Download Latest Github Tools
+  #   ansible.builtin.get_url:
+  #     url: "{{ item.url }}"
+  #     dest: downloads
+  #   with_items: "{{ _latest_github_urls.results }}"
+
+  - name: Install Kubectl
+    ansible.builtin.copy:
+      src: downloads/kubectl
+      dest: /usr/local/bin
+      owner: root
+      group: root
+      mode: '0755'
+      remote_src: True
+    become: True
