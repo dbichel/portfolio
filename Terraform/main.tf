@@ -19,7 +19,8 @@ resource "local_file" "ansible_inventory"{
     "ansible_inventory.tftpl",
     {
       jumphost_ip = aws_instance.jumphost.public_ip,
-      control_node_ips = []
+      control_node_ips = [aws_instance.controller.private_ip]
+      worker_node_ips = aws_instance.worker[*].private_ip
     }
   )
   lifecycle {

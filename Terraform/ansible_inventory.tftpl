@@ -5,5 +5,8 @@ ${jumphost_ip}
 ${jumphost_ip}
 
 [control_nodes]
-%{ for ip in control_node_ips}${ip}
+%{ for ip in control_node_ips}${ip}%{ endfor }
+
+[worker_nodes]
+%{ for ip in worker_node_ips }${ip}
 %{ endfor }

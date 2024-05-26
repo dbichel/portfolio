@@ -9,7 +9,10 @@ You must have the following software installed and available on the path:
 You must have aws authentication configured with the following permissons:
 - CreateEC2
 - CreateBucket
-- TODO
 
 ## Configuration
 You may configure Terraform's S3 backend in Taskfile.yml
+
+TODO:
+    - Usage
+    - Flesh out required aws permissons
