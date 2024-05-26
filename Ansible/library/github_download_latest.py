@@ -40,7 +40,7 @@ def run_module():
         module.fail_json(msg="File regex returned no files", **result)
 
     result["url"] = matched_urls[0]
-    result['changed'] = True
+    result['changed'] = False # This is a purely informational module
     module.exit_json(**result)
 
 def main():

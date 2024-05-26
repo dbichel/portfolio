@@ -23,9 +23,4 @@ resource "local_file" "ansible_inventory"{
       worker_node_ips = aws_instance.worker[*].private_ip
     }
   )
-  lifecycle {
-    replace_triggered_by = [
-      aws_instance.jumphost.public_ip
-    ]
-  }
 }

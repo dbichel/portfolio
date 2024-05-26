@@ -4,4 +4,12 @@ tasks:
   configure:
     desc: Runs ansible to configure hosts
     cmds:
+      - ansible-playbook Ansible/main.yml -v
+  k8s:
+    desc: Run playbook to configure kubernetes hosts
+    cmds:
+      - ansible-playbook Ansible/kubernetes.yml
+  jumphost:
+    desc: Run playbook to configure jumphosts
+    cmds:
       - ansible-playbook Ansible/jumphost.yml

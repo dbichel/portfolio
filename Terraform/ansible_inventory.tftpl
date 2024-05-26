@@ -1,6 +1,3 @@
-[proxy]
-${jumphost_ip}
-
 [jumphosts]
 ${jumphost_ip}
 
@@ -10,3 +7,13 @@ ${jumphost_ip}
 [worker_nodes]
 %{ for ip in worker_node_ips }${ip}
 %{ endfor }
+
+[kubernetes:children]
+control_nodes
+worker_nodes
+
+[kubernetes:vars]
+ansible_ssh_common_args='-o ProxyCommand="ssh -o UserKnownHostsFile="./Ansible/known_hosts" -i dbichel-portfolio-project-key -W %h:%p ec2-user@${jumphost_ip}"'
+
+[all:vars]
+ansible_ssh_extra_args='-o UserKnownHostsFile="./Ansible/known_hosts"'

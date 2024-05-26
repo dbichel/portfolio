@@ -39,6 +39,14 @@ resource "aws_vpc_security_group_ingress_rule" "jumphost_ssh" {
   ip_protocol       = "tcp"
 }
 
+resource "aws_vpc_security_group_ingress_rule" "jumphost_ssh_2" {
+  security_group_id = aws_security_group.jumphost.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 65535
+  to_port           = 65535
+  ip_protocol       = "tcp"
+}
+
 resource "aws_vpc_security_group_egress_rule" "jumphost_allow_all" {
   security_group_id = aws_security_group.jumphost.id
   cidr_ipv4         = "0.0.0.0/0"
@@ -56,7 +64,7 @@ resource "aws_key_pair" "jumphost" {
 
 resource "local_sensitive_file" "jumphost_key" {
   content         = tls_private_key.jumphost.private_key_openssh
-  filename        = "../${var.name_prefix}_key"
+  filename        = "../${var.name_prefix}-key"
   file_permission = "0600"
 }
 

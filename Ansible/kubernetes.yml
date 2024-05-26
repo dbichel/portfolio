@@ -1,0 +1,11 @@
+---
+- name: Configure Kubernetes Hosts
+  hosts: kubernetes
+  gather_facts: false
+
+  tasks:
+  - name: Create Download Directory
+    ansible.builtin.file:
+      path: downloads
+      state: directory
+      mode: '0755'

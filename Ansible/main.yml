@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Configure Jump Host Keys
+      retries: 10
+      delay: 5
+      until: "_result.rc == 0"
+      ansible.builtin.shell: "ssh-keyscan {{ item }} >> known_hosts"
+      with_items: "{{ groups['jumphosts'] }}"
+      register: _result
+
+- hosts: jumphosts
+  gather_facts: False
+  tasks:
+    - name: Gather K8S Host Keys
+      retries: 10
+      delay: 5
+      until: "_hostkeys.rc == 0"
+      ansible.builtin.shell: "ssh-keyscan {{ item }}"
+      with_items: "{{ groups['kubernetes'] }}"
+      register: _hostkeys
+
+    - name: Configure K8S Host Keys
+      delegate_to: localhost
+      ansible.builtin.lineinfile:
+        path: known_hosts
+        line: "{{ item.stdout }}"
+      loop: "{{ _hostkeys.results }}"
+
+- name: Configure Jumphosts
+  ansible.builtin.import_playbook: jumphost.yml
+
+- name: Configure K8S Machines
+  ansible.builtin.import_playbook: kubernetes.yml
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Remove Temporary Known Hosts
+      ansible.builtin.file:
+        path: known_hosts
+        state: absent
+  tags:
+    - always
