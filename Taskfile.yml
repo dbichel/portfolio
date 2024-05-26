@@ -12,6 +12,8 @@ vars:
 includes:
   terraform:
     taskfile:  ./Terraform/Taskfile.yml
+  ansible:
+    taskfile: ./Ansible/Taskfile.yml
 
 tasks:
   setup:
@@ -20,6 +22,7 @@ tasks:
       - task: terraform:backend-create
       - task: terraform:init
       - task: terraform:apply
+      - task: ansible:configure
   destroy:
     desc: Fully teardown the project putting it back into a "scratch" state
     cmds:

@@ -56,7 +56,7 @@ resource "aws_key_pair" "jumphost" {
 
 resource "local_sensitive_file" "jumphost_key" {
   content         = tls_private_key.jumphost.private_key_openssh
-  filename        = "../${var.name_prefix}_rsa"
+  filename        = "../${var.name_prefix}_key"
   file_permission = "0600"
 }
 

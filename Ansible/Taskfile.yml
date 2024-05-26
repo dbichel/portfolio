@@ -1,0 +1,7 @@
+version: 3
+
+tasks:
+  configure:
+    desc: Runs ansible to configure hosts
+    cmds:
+      - ansible-playbook Ansible/jumphost.yml

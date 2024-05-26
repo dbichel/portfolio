@@ -1,0 +1,12 @@
+---
+- name: Configure Jumphost
+  hosts: jumphosts
+
+  tasks:
+  - name: Install utilities
+    ansible.builtin.dnf:
+      name: "{{ item }}"
+      state: latest
+    loop:
+      - git
+    become: true
