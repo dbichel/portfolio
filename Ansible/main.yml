@@ -41,8 +41,8 @@
         regexp: "{{ item.stdout.split()[0] }}"
       loop: "{{ _hostkeys.results }}"
 
-# - name: Generate Certificates
-#   ansible.builtin.import_playbook: playbooks/certificates.yml
+- name: Generate Certificates
+  ansible.builtin.import_playbook: playbooks/certificates.yml
 
 - name: Perform Common Configuration
   ansible.builtin.import_playbook: playbooks/common.yml

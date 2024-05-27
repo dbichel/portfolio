@@ -1,9 +1,33 @@
 ---
 - name: Generate Certificates
   hosts: jumphost
+  vars:
+    cert_directory: certs
 
   tasks:
+    - name: Create cert directory
+      ansible.builtin.file:
+        path: "{{ cert_directory }}"
+        state: directory
+        mode: '0750'
     - name: Create CA Private Key
       community.crypto.openssl_privatekey:
-        path: certs/ca-certificate.key
-    # - name: Create CSR For CA Certificate
+        path: "{{ cert_directory }}/ca-certificate.key"
+    - name: Create CSR For CA Certificate
+      community.crypto.openssl_csr_pipe:
+        privatekey_path: "{{ cert_directory }}/ca-certificate.key"
+        common_name: K8S CA
+        use_common_name_for_san: false
+        basic_constraints:
+          - 'CA:TRUE'
+        basic_constraints_critical: true
+        key_usage:
+          - keyCertSign
+        key_usage_critical: true
+      register: _ca_csr
+    - name: Create self-signed CA cert from CSR
+      community.crypto.x509_certificate:
+        path: "{{ cert_directory }}/ca-certificate.pem"
+        csr_content: "{{ _ca_csr.csr }}"
+        privatekey_path: certs/ca-certificate.key
+        provider: selfsigned
