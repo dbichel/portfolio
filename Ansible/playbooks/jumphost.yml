@@ -14,7 +14,7 @@
       url: https://dl.k8s.io/release/stable.txt
       return_content: true
     register: k8s_version
-  
+
   - name: Download Kube Binaries
     ansible.builtin.get_url:
       url: "https://dl.k8s.io/release/{{ k8s_version.content }}/bin/linux/amd64/{{ item }}"
@@ -26,17 +26,17 @@
       - kube-scheduler
       - kube-proxy
       - kubelet
-  
+
   - name: Get Latest Github Tools Versions
     github_download_latest:
       github_path: "{{ item.path }}"
       file_regex: "{{ item.regex }}"
     loop:
-      - { path: 'kubernetes-sigs/cri-tools', regex: '.*crictl-v([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz$' }
-      - { path: 'opencontainers/runc', regex: '.*runc.amd64$' }
-      - { path: 'containernetworking/plugins', regex: '.*cni-plugins-linux-amd64-v([0-9]*\.[0-9]*\.[0-9]*).tgz$' }
-      - { path: 'containerd/containerd', regex: '.*\/containerd-([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz$' }
-      - { path: 'etcd-io/etcd', regex: '.*etcd-v([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz' }
+      - {path: 'kubernetes-sigs/cri-tools', regex: '.*crictl-v([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz$'}
+      - {path: 'opencontainers/runc', regex: '.*runc.amd64$'}
+      - {path: 'containernetworking/plugins', regex: '.*cni-plugins-linux-amd64-v([0-9]*\.[0-9]*\.[0-9]*).tgz$'}
+      - {path: 'containerd/containerd', regex: '.*\/containerd-([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz$'}
+      - {path: 'etcd-io/etcd', regex: '.*etcd-v([0-9]*\.[0-9]*\.[0-9]*)-linux-amd64.tar.gz'}
     register: _latest_github_urls
 
   - name: Download Latest Github Tools
@@ -52,12 +52,11 @@
       owner: root
       group: root
       mode: '0755'
-      remote_src: True
-    become: True
-  
+      remote_src: true
+    become: true
+
   - name: Copy Up SSH Key
     ansible.builtin.copy:
-      src: ../dbichel-portfolio-project-key
+      src: ../../dbichel-portfolio-project-key
       dest: ~/.ssh/id_rsa
       mode: '0600'
-

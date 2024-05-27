@@ -2,16 +2,16 @@
 - name: Configure Jumphost Host Keys
   hosts: localhost
   connection: local
-  gather_facts: False
+  gather_facts: false
   tasks:
     - name: Get Jumphost Host Keys
       retries: 10
       delay: 5
       until: _result is not failed
-      ansible.builtin.shell: "ssh-keyscan -t ed25519 {{ hostvars[item].ansible_host }}"
+      ansible.builtin.command: "ssh-keyscan -t ed25519 {{ hostvars[item].ansible_host }}"
       with_items: "{{ groups['jumphosts'] }}"
       register: _result
-      changed_when: False
+      changed_when: false
     - name: Configure Jumphost Host Keys
       ansible.builtin.lineinfile:
         path: known_hosts
@@ -22,16 +22,16 @@
 
 - name: Configure K8S Host Keys
   hosts: jumphost
-  gather_facts: False
+  gather_facts: false
   tasks:
     - name: Gather K8S Host Keys
       retries: 10
       delay: 5
       until: _hostkeys is not failed
-      ansible.builtin.shell: "ssh-keyscan -t ed25519 {{ hostvars[item].ansible_host }}"
+      ansible.builtin.command: "ssh-keyscan -t ed25519 {{ hostvars[item].ansible_host }}"
       with_items: "{{ groups['kubernetes'] }}"
       register: _hostkeys
-      changed_when: False
+      changed_when: false
 
     - name: Configure K8S Host Keys
       delegate_to: localhost
@@ -41,11 +41,14 @@
         regexp: "{{ item.stdout.split()[0] }}"
       loop: "{{ _hostkeys.results }}"
 
+# - name: Generate Certificates
+#   ansible.builtin.import_playbook: playbooks/certificates.yml
+
 - name: Perform Common Configuration
-  ansible.builtin.import_playbook: common.yml
+  ansible.builtin.import_playbook: playbooks/common.yml
 
 - name: Configure Jumphosts
-  ansible.builtin.import_playbook: jumphost.yml
+  ansible.builtin.import_playbook: playbooks/jumphost.yml
 
 - name: Configure K8S Machines
-  ansible.builtin.import_playbook: kubernetes.yml
+  ansible.builtin.import_playbook: playbooks/kubernetes.yml

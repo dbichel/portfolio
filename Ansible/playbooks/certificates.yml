@@ -1,0 +1,9 @@
+---
+- name: Generate Certificates
+  hosts: jumphost
+
+  tasks:
+    - name: Create CA Private Key
+      community.crypto.openssl_privatekey:
+        path: certs/ca-certificate.key
+    # - name: Create CSR For CA Certificate

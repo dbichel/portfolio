@@ -1,0 +1,14 @@
+---
+- name: Configure DNS
+  hosts: all
+
+  tasks:
+  - name: Configure DNS
+    ansible.builtin.lineinfile:
+      path: /etc/hosts
+      line: >-
+        {{ hostvars[item]['ansible_default_ipv4']['address'] }}
+        {{ hostvars[item]['inventory_hostname'] }}.kubernetes.local
+        {{ hostvars[item]['inventory_hostname'] }}
+    loop: "{{ groups['kubernetes'] }}"
+    become: true

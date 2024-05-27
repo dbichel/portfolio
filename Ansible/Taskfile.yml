@@ -8,8 +8,12 @@ tasks:
   k8s:
     desc: Run playbook to configure kubernetes hosts
     cmds:
-      - ansible-playbook Ansible/kubernetes.yml
+      - ansible-playbook Ansible/playbooks/kubernetes.yml
   jumphost:
     desc: Run playbook to configure jumphosts
     cmds:
-      - ansible-playbook Ansible/jumphost.yml
+      - ansible-playbook Ansible/playbooks/jumphost.yml
+  lint:
+    desc: Run ansible-lint
+    cmds:
+      - ANSIBLE_LIBRARY=Ansible/library ansible-lint Ansible/playbooks Ansible/main.yml
