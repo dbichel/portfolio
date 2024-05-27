@@ -7,7 +7,7 @@ vars:
   REGION: us-east-1
 
   TERRAFORM_CMD: terraform -chdir=Terraform
-  BACKEND_PATH: backend.conf
+  BACKEND_PATH: .backend.conf
 
 includes:
   terraform:

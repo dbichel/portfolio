@@ -34,3 +34,9 @@ override.tf.json
 terraform.rc
 
 .backend.conf
+
+# Ignore generated files
+Ansible/known_hosts
+Ansible/ansible_inventory
+Terraform/.terraform.lock.hcl
+dbichel-portfolio-project-key
