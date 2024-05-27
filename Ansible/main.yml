@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- name: Configure Jumphost Host Keys
+  hosts: localhost
   connection: local
   gather_facts: False
   tasks:
@@ -11,15 +12,16 @@
       with_items: "{{ groups['jumphosts'] }}"
       register: _result
       changed_when: False
-    - name: Configure Jumphost HostKeys
+    - name: Configure Jumphost Host Keys
       ansible.builtin.lineinfile:
         path: known_hosts
         create: true
-        mode: '0666'
+        mode: '0644'
         line: "{{ item.stdout }}"
       loop: "{{ _result.results }}"
 
-- hosts: jumphost
+- name: Configure K8S Host Keys
+  hosts: jumphost
   gather_facts: False
   tasks:
     - name: Gather K8S Host Keys
@@ -38,6 +40,9 @@
         line: "{{ item.stdout }}"
         regexp: "{{ item.stdout.split()[0] }}"
       loop: "{{ _hostkeys.results }}"
+
+- name: Perform Common Configuration
+  ansible.builtin.import_playbook: common.yml
 
 - name: Configure Jumphosts
   ansible.builtin.import_playbook: jumphost.yml

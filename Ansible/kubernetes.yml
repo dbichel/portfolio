@@ -1,15 +1,15 @@
 ---
 - name: Configure Kubernetes Hosts
   hosts: kubernetes
-  gather_facts: False
+  become: true
 
   tasks:
-  - name: Add Hostname To /etc/hosts
-    ansible.builtin.lineinfile:
-      path: /etc/hosts
-      line: "127.0.0.1 {{ inventory_hostname }}.kubernetes.local {{ inventory_hostname }}"
-    become: True
-  - name: Change Hostname
-    ansible.builtin.hostname:
-      name: "{{ inventory_hostname }}"
-    become: True
+    - name: Add Hostname To /etc/hosts
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "127.0.0.1 {{ inventory_hostname }}.kubernetes.local {{ inventory_hostname }}"
+      become: True
+    - name: Change Hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+      become: True
